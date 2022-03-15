@@ -1,0 +1,85 @@
+imversion: '3.7'
+
+networks:
+  intranet:
+
+services:
+  hydra:
+    image: oryd/hydra:v1.10.6
+    # TODO image: gcr.io/{name}/oauth-core-hydra:v1.0
+    container_name: hydra
+    ports:
+      - "4444:4444" # Public port
+      - "4445:4445" # Admin port
+      - "5555:5555" # Port for hydra token user
+    env_file:
+      - ./config/.env-hydra-stag
+    restart: on-failure
+    depends_on:
+      - auth-db
+      - hydra-migrate
+    networks:
+      - intranet
+
+  hydra-migrate:
+    image: oryd/hydra:v1.10.6
+    # TODO image: gcr.io/{name}/oauth-core-hydra-migrate:v1.0
+    container_name: hydra-migrate
+    env_file:
+      - ./config/.env-hydra-stag
+    depends_on:
+      - auth-db
+    restart: on-failure
+    networks:
+      - intranet
+
+  auth-db:
+    image: mysql:5.7
+    container_name: auth-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    networks:
+      - intranet
+
+  consent:
+    environment:
+      - HYDRA_ADMIN_URL=http://hydra:4445
+    image: oryd/hydra-login-consent-node:v1.10.6
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - intranet
+
+  oauth2-token:
+    build: ../oauth2-token
+    container_name: oauth2-token
+    depends_on:
+      - hydra
+    ports:
+      - "9527:9527"
+    environment:
+      - APP_PORT=9527
+      - HYDRA_PUBLIC_HOST=http://hydra:4444
+      - HYDRA_ADMIN_HOST=http://hydra:4445
+      - GIN_MODE=release
+    networks:
+      - intranet
+
+  oauth2-api:
+    build: ../oauth2-api
+    container_name: oauth2-api
+    depends_on:
+      - hydra
+    ports:
+      - "9526:9526"
+    environment:
+      - APP_PORT=9526
+      - HYDRA_PUBLIC_HOST=http://hydra:4444
+      - HYDRA_ADMIN_HOST=http://hydra:4445
+      - GIN_MODE=release
+    networks:
+      - intranet
+
