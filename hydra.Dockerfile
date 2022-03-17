@@ -1,4 +1,4 @@
-FROM oryd/hydra:v1.10.6-alpine
+FROM oryd/hydra:v1.11.7
 
 USER root
 RUN apk add perl
@@ -8,4 +8,4 @@ RUN chmod -R 700 /script
 USER ory
 WORKDIR /script
 
-ENTRYPOINT ["sh","/script/hydra-script.sh"]
+ENTRYPOINT ["sh", "/script/hydra-script.sh"]

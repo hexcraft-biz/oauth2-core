@@ -8,7 +8,7 @@ serve:
   cookies:
     same_site_mode: Lax
 
-dsn: ${oauth2_core_dsn}
+dsn: ${OAUTH2_CORE_DSN}
 
 oidc:
   subject_identifiers:
@@ -16,17 +16,17 @@ oidc:
       - public
       - pairwise
     pairwise:
-      salt: ${oauth2_core_salt}
+      salt: ${OAUTH2_CORE_SALT}
 
 urls:
-  login: ${oauth2_core_urls_login}
-  consent: ${oauth2_core_urls_consent}
-  logout: ${oauth2_core_urls_logout}
-  error: ${oauth2_core_urls_error}
-  post_logout_redirect: ${oauth2_core_urls_post_logout_redirect}
+  login: ${OAUTH2_CORE_URLS_LOGIN}
+  consent: ${OAUTH2_CORE_URLS_CONSENT}
+  logout: ${OAUTH2_CORE_URLS_LOGOUT}
+  error: ${OAUTH2_CORE_URLS_ERROR}
+  post_logout_redirect: ${OAUTH2_CORE_URLS_POST_LOGOUT_REDIRECT}
   self:
-    public: ${oauth2_core_urls_self_public}
-    issuer: ${oauth2_core_urls_self_issuer}
+    public: ${OAUTH2_CORE_URLS_SELF_PUBLIC}
+    issuer: ${OAUTH2_CORE_URLS_SELF_ISSUER}
 
 ttl:
   access_token: 1h
@@ -37,11 +37,14 @@ ttl:
 oauth2:
   expose_internal_errors: true
 
+pkce:
+  enforced_for_public_clients: true
+
 secrets:
   cookie:
-    - ${oauth2_core_secrets_cookie}
+    - ${OAUTH2_CORE_SECRETS_COOKIE}
   system:
-    - ${oauth2_core_secrets_system}
+    - ${OAUTH2_CORE_SECRETS_SYSTEM}
 
 log:
   leak_sensitive_values: true
