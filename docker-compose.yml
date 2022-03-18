@@ -72,9 +72,9 @@ services:
     networks:
       - intranet
 
-  oauth2-api:
-    build: ../oauth2-api
-    container_name: oauth2-api
+  oauth2-client:
+    build: ../oauth2-client
+    container_name: oauth2-client
     depends_on:
       - hydra
     ports:
