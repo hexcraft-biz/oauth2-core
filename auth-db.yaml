@@ -8,3 +8,11 @@ service:
     targetPort: 3306 
     protocol: TCP
 
+liveness: {}
+
+readiness:
+  tcpSocket:
+    port: 3306
+
+
+

@@ -21,6 +21,6 @@ liveness:
 
 readiness:
   httpGet:
-    path: /healthy/ready
+    path: /health/ready
     port: 4444
 
