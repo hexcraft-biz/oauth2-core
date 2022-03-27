@@ -1,20 +1,10 @@
 module:
-  name: oauth2-token 
+  name: auth-db 
   component: oauth2
 
 service:
   ports:
-  - port: 9527
-    targetPort: 9527 
+  - port: 3306 
+    targetPort: 3306 
     protocol: TCP
-
-liveness: 
-  httpGet:
-    path: /ping
-    port: 80 
-
-readiness:
-  httpGet:
-    path: /ping
-    port: 80 
 
