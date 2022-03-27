@@ -1,0 +1,20 @@
+module:
+  name: oauth2-token 
+  component: oauth2
+
+service:
+  ports:
+  - port: 9527
+    targetPort: 9527 
+    protocol: TCP
+
+liveness: 
+  httpGet:
+    path: /ping
+    port: 80 
+
+readiness:
+  httpGet:
+    path: /ping
+    port: 80 
+

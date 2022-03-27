@@ -1,0 +1,26 @@
+module:
+  name: hydra 
+  component: oauth2
+
+service:
+  ports:
+  - port: 4444 
+    targetPort: 4444 
+    protocol: TCP
+  - port: 4445 
+    targetPort: 4445 
+    protocol: TCP
+  - port: 5555 
+    targetPort: 5555 
+    protocol: TCP
+
+liveness: 
+  httpGet:
+    path: /health/ready
+    port: 4444
+
+readiness:
+  httpGet:
+    path: /healthy/ready
+    port: 4444
+
