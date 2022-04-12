@@ -1,0 +1,5 @@
+module:
+  name: hydra-migrate 
+  component: oauth2
+
+

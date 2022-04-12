@@ -1,0 +1,20 @@
+module:
+  name: consent
+  component: oauth2
+
+service:
+  ports:
+  - port: 3000 
+    targetPort: 3000 
+    protocol: TCP
+
+liveness: 
+  httpGet:
+    path: /health/ready
+    port: 3000
+
+readiness:
+  httpGet:
+    path: /health/ready
+    port: 3000
+
