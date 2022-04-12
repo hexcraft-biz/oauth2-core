@@ -1,0 +1,18 @@
+module:
+  name: auth-db 
+  component: oauth2
+
+service:
+  ports:
+  - port: 3306 
+    targetPort: 3306 
+    protocol: TCP
+
+liveness: {}
+
+readiness:
+  tcpSocket:
+    port: 3306
+
+
+
