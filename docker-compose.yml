@@ -51,39 +51,43 @@ services:
     environment:
       - HYDRA_ADMIN_URL=http://hydra:4445
     image: oryd/hydra-login-consent-node:v1.10.6
+    #build: ../hydra-login-consent-node
     ports:
       - "3000:3000"
     restart: unless-stopped
     networks:
       - intranet
 
-  oauth2-token:
-    build: ../oauth2-token
-    container_name: oauth2-token
+  api-proxy:
+    build: ../api-proxy
+    container_name: api-proxy
     depends_on:
       - hydra
     ports:
       - "9527:9527"
     environment:
+      - APP_HOSTNAME=proxy.example.com
+      - APP_PATH=/www/
       - APP_PORT=9527
-      - HYDRA_PUBLIC_HOST=http://hydra:4444
-      - HYDRA_ADMIN_HOST=http://hydra:4445
-      - GIN_MODE=release
+      - GIN_MODE=debug
+      - TIMEZONE=
+      - TRUST_PROXY=localhost
+      - PROXY_MAPPINGS_JSON_FILE_PATH=./.proxyMappings.json
+      - OAUTH2_HOST=http://hydra:4445
     networks:
       - intranet
 
-  oauth2-client:
-    build: ../oauth2-client
-    container_name: oauth2-client
-    depends_on:
-      - hydra
-    ports:
-      - "9526:9526"
-    environment:
-      - APP_PORT=9526
-      - HYDRA_PUBLIC_HOST=http://hydra:4444
-      - HYDRA_ADMIN_HOST=http://hydra:4445
-      - GIN_MODE=release
-    networks:
-      - intranet
-
+#   oauth2-token:
+#     build: ../oauth2-token
+#     container_name: oauth2-token
+#     depends_on:
+#       - hydra
+#     ports:
+#       - "9527:9527"
+#     environment:
+#       - APP_PORT=9527
+#       - HYDRA_PUBLIC_HOST=http://hydra:4444
+#       - HYDRA_ADMIN_HOST=http://hydra:4445
+#       - GIN_MODE=release
+#     networks:
+#       - intranet
