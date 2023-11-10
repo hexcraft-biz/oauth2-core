@@ -1,11 +1,10 @@
 # oauth2-core
 
 ```bash
-# Prepare oauth2-token & oauth2-client & oauth2-admin first
 # Then Launch all service
-$ cp .env-hydra-stag-example .env-hydra-stag
+$ cp .env.example .env
 $ sh ./launch.sh
 ```
 
-[Hydra config ref](https://www.ory.sh/hydra/docs/configure-deploy/)
-
+[Hydra config ref](https://www.ory.sh/docs/hydra/reference/configuration)
+[Hydra config-deploy ref](https://www.ory.sh/hydra/docs/configure-deploy/)
