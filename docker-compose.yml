@@ -1,16 +1,7 @@
-version: '3.7'
-
-networks:
-  intranet:
-volumes:
-  dev_scopes_db:
-    external: true
-  dev_account_db:
-    external: true
+version: "3.7"
 
 services:
   hydra:
-    # TODO image: gcr.io/{name}/oauth-core-hydra:v1.0
     build: 
       context: .
       dockerfile: ./hydra.Dockerfile
@@ -20,31 +11,18 @@ services:
       - "4445:4445" # Admin port
       - "5555:5555" # Port for hydra token user
     env_file:
-      - ./.env-hydra-stag
-    restart: on-failure
+      - ./.env
+    restart: unless-stopped
     depends_on:
       - auth-db
       - hydra-migrate
     networks:
       - intranet
 
-  hydra-migrate:
-    # TODO image: gcr.io/{name}/oauth-core-hydra-migrate:v1.0
-    build: 
-      context: .
-      dockerfile: ./hydra-migrate.Dockerfile
-    container_name: hydra-migrate
-    env_file:
-      - ./.env-hydra-stag
-    depends_on:
-      - auth-db
-    restart: on-failure
-    networks:
-      - intranet
-
   auth-db:
-    image: mysql:5.7
+    image: mysql:8.0.26
     container_name: auth-db
+    platform: linux/x86_64
     ports:
       - "3306:3306"
     environment:
@@ -52,169 +30,27 @@ services:
     networks:
       - intranet
 
+  hydra-migrate:
+    build: 
+      context: .
+      dockerfile: ./hydra-migrate.Dockerfile
+    container_name: hydra-migrate
+    env_file:
+      - ./.env
+    depends_on:
+      - auth-db
+    restart: on-failure
+    networks:
+      - intranet
+
   consent:
     environment:
       - HYDRA_ADMIN_URL=http://hydra:4445
-    #image: oryd/hydra-login-consent-node:v1.10.6
-    build: ../hydra-login-consent-node
+    image: oryd/hydra-login-consent-node:v2.2.0-rc.3
     ports:
       - "3000:3000"
     restart: unless-stopped
     networks:
       - intranet
-
-  api-proxy:
-   build:
-     context: ../api-proxy
-     dockerfile: dev.Dockerfile
-   container_name: api-proxy
-   depends_on:
-     - hydra
-     - scopes-service
-   ports:
-     - "9525:9525"
-   environment:
-     - APP_HOSTNAME=proxy.example.com
-     - APP_PATH=/www/
-     - APP_PORT=9525
-     - GIN_MODE=debug
-     - TIMEZONE=
-     - TRUST_PROXY=localhost
-     - PROXY_MAPPINGS_JSON_FILE_PATH=./.proxyMappings.json
-     - OAUTH2_ADMIN_HOST=http://hydra:4445
-     - OAUTH2_PUBLIC_HOST=http://hydra:4444
-     - OAUTH2_SCOPES_HOST=http://scopes-service:9526
-     - OAUTH2_HEADER_PREFIX=Kmk
-   networks:
-     - intranet
-
-  scopes-service:
-    build:
-      context: ../scopes-service
-      dockerfile: Dockerfile
-    container_name: scopes-service
-    depends_on:
-      - scopes-db
-    ports:
-      - "9526:9526"
-    environment:
-      - APP_HOST=scopes.example.com
-      - APP_PATH=/www/
-      - APP_PORT=9526
-      - GIN_MODE=debug
-      - TIMEZONE=
-      - TRUST_PROXY=localhost
-      - AUTO_CREATE_DB_SCHEMA=false
-      - DB_TYPE=mysql
-      - DB_INIT_USER=root
-      - DB_INIT_PASSWORD=12345678
-      - DB_INIT_PARAMS=parseTime=true
-      - DB_USER=root
-      - DB_PASSWORD=12345678
-      - DB_HOST=scopes-db
-      - DB_PORT=3406
-      - DB_NAME=oauth2-scopes
-      - DB_PARAMS=parseTime=true
-      - DB_MAX_OPEN=10
-      - DB_MAX_IDLE=10
-      - DB_LIFE_TIME=120
-      - DB_IDLE_TIME=90
-    networks:
-      - intranet
-
-  scopes-db:
-    container_name: dev-scopes-mysql
-    image: mysql:8.0.25
-    ports:
-     - "3406:3406"
-    environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_USER:          admin
-      MYSQL_PASSWORD:      12345678
-      MYSQL_TCP_PORT: 3406
-    volumes:
-      - "dev_scopes_db:/var/lib/mysql"
-    networks:
-      - intranet
-
-  scopes-phpmyadmin:
-    container_name: dev-shared-scopes-pma
-    image: phpmyadmin/phpmyadmin
-    ports:
-     - "8008:80"
-    environment:
-      PMA_HOST: scopes-db
-      PMA_PORT: 3406
-    networks:
-      - intranet
-    depends_on:
-      - scopes-db
-
-  users-backend:
-    build:
-      context: ../kmk-resource-users
-      dockerfile: Dockerfile
-    container_name: users-backend
-    ports:
-      - "9527:9527"
-    environment:
-      - APP_HOST=users.kmkapis.com
-      - APP_PATH=/
-      - APP_PORT=9527
-      - GIN_MODE=debug
-      - TIMEZONE=
-      - TRUST_PROXY=localhost
-      - AUTO_CREATE_DB_SCHEMA=false
-      - DB_TYPE=mysql
-      - DB_INIT_USER=root
-      - DB_INIT_PASSWORD=12345678
-      - DB_INIT_PARAMS=parseTime=true
-      - DB_USER=root
-      - DB_PASSWORD=12345678
-      - DB_HOST=account-db
-      - DB_PORT=3506
-      - DB_NAME=kmk_account
-      - DB_PARAMS=parseTime=true
-      - DB_MAX_OPEN=10
-      - DB_MAX_IDLE=10
-      - DB_LIFE_TIME=120
-      - DB_IDLE_TIME=90
-      - JWT_SECRET=iAmSoFuckingHunrgry
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=587
-      - SMTP_USERNAME=
-      - SMTP_PASSWORD=
-      - OAUTH2_HEADER_PREFIX=Kmk
-    restart: on-failure
-    depends_on:
-      - account-db
-    networks:
-      - intranet
-
-  account-db:
-    container_name: dev-shared-mysql
-    image: mysql:8.0.25
-    ports:
-     - "3506:3506"
-    environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_USER:          admin
-      MYSQL_PASSWORD:      12345678
-      MYSQL_TCP_PORT: 3506
-    volumes:
-      - "dev_account_db:/var/lib/mysql"
-    networks:
-      - intranet
-
-  account-phpmyadmin:
-    container_name: dev-shared-account-pma
-    image: phpmyadmin/phpmyadmin
-    ports:
-     - "8007:80"
-    environment:
-      PMA_HOST: account-db
-      PMA_PORT: 3506
-    networks:
-      - intranet
-    depends_on:
-      - account-db
+networks:
+  intranet:

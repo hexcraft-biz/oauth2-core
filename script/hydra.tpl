@@ -11,6 +11,12 @@ serve:
 dsn: ${OAUTH2_CORE_DSN}
 
 oidc:
+  dynamic_client_registration:
+    default_scope:
+      - openid
+      - offline
+      - offline_access
+    enabled: false
   subject_identifiers:
     supported_types:
       - public
@@ -26,25 +32,57 @@ urls:
   post_logout_redirect: ${OAUTH2_CORE_URLS_POST_LOGOUT_REDIRECT}
   self:
     public: ${OAUTH2_CORE_URLS_SELF_PUBLIC}
+    admin: ${OAUTH2_CORE_URLS_SELF_ADMIN}
     issuer: ${OAUTH2_CORE_URLS_SELF_ISSUER}
 
-ttl:
-  access_token: 1h
-  refresh_token: 1h
-  id_token: 1h
-  auth_code: 1h
-
-oauth2:
-  expose_internal_errors: true
-
-pkce:
-  enforced_for_public_clients: true
+webfinger:
+  oidc_discovery:
+    supported_claims:
+      - email
+      - email_verified
+      - phone_number
+      - phone_number_verified
+      - profile
+    supported_scope:
+      - email
+      - offline_access
+      - openid
+      - phone
+      - profile
+    userinfo_url: ${OAUTH2_CORE_URLS_USERINFO}
+    auth_url: ${OAUTH2_CORE_URLS_AUTH}
+    token_url: ${OAUTH2_CORE_URLS_TOKEN}
+    jwks_url: ${OAUTH2_CORE_URLS_JWKS}
 
 secrets:
   cookie:
     - ${OAUTH2_CORE_SECRETS_COOKIE}
   system:
     - ${OAUTH2_CORE_SECRETS_SYSTEM}
+
+strategies:
+  access_token: ${OAUTH2_STRATEGIES_ACCESS_TOKEN}
+  jwt:
+    scope_claim: string
+  scope: exact
+
+ttl:
+  access_token: ${OAUTH2_TTL_ACCESS_TOKEN}
+  refresh_token: ${OAUTH2_TTL_REFRESH_TOKEN}
+  id_token: ${OAUTH2_TTL_ID_TOKEN}
+  auth_code: ${OAUTH2_TTL_AUTH_CODE}
+  login_consent_request: ${OAUTH2_TTL_LOGIN_CONSENT_REQUESET}
+
+oauth2:
+  hashers:
+    bcrypt:
+      cost: 4
+  session:
+    encrypt_at_rest: true
+  pkce:
+    enforced_for_public_clients: ${OAUTH2_PKCE_ENFORCED_FOR_PUBLIC_CLIENTS}
+    enforced: ${OAUTH2_PKCE_ENFORCED}
+  expose_internal_errors: true
 
 log:
   leak_sensitive_values: true

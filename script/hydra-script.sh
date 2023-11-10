@@ -24,4 +24,4 @@ if [ "$MODE" == "debug" ]; then
   sleep 3000;
 fi
 
-hydra serve -c hydra.yml all --dangerous-force-http
+hydra serve -c hydra.yml all --dev

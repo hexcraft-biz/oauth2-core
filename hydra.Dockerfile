@@ -1,4 +1,4 @@
-FROM oryd/hydra:v1.11.7
+FROM oryd/hydra:v2.2.0-rc.3
 
 USER root
 RUN apk add perl
