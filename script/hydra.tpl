@@ -33,7 +33,7 @@ urls:
   self:
     public: ${OAUTH2_CORE_URLS_SELF_PUBLIC}
     admin: ${OAUTH2_CORE_URLS_SELF_ADMIN}
-    issuer: ${OAUTH2_CORE_URLS_SELF_ISSUER}
+    issuer: ${OAUTH2_CORE_URLS_SELF_PUBLIC}
 
 webfinger:
   oidc_discovery:
@@ -49,10 +49,10 @@ webfinger:
       - openid
       - phone
       - profile
-    userinfo_url: ${OAUTH2_CORE_URLS_USERINFO}
-    auth_url: ${OAUTH2_CORE_URLS_AUTH}
-    token_url: ${OAUTH2_CORE_URLS_TOKEN}
-    jwks_url: ${OAUTH2_CORE_URLS_JWKS}
+    userinfo_url: ${OAUTH2_CORE_URLS_SELF_PUBLIC}/userinfo
+    auth_url: ${OAUTH2_CORE_URLS_SELF_PUBLIC}/oauth2/auth
+    token_url: ${OAUTH2_CORE_URLS_SELF_PUBLIC}/oauth2/token
+    jwks_url: ${OAUTH2_CORE_URLS_SELF_PUBLIC}/.well-known/jwks.json
 
 secrets:
   cookie:
